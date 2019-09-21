@@ -51,9 +51,9 @@ namespace Mill
             //
             //labels
             //
-            short[] coordinates1 = { 97, 370, 643 };
-            short[] coordinates2 = { 188, 370, 551 };
-            short[] coordinates3 = { 280, 372, 460 };
+            short[] coordinates1 = { 94, 367, 640 };
+            short[] coordinates2 = { 185, 367, 548 };
+            short[] coordinates3 = { 277, 369, 457 };
             short[] c;
             int j = 0;
             void CreateLabels(short k, short[] coordinates)
@@ -62,7 +62,7 @@ namespace Mill
                 {
                     this.LB = new System.Windows.Forms.Label();
                     this.LB.Name = "label" + j.ToString();
-                    this.LB.BackColor = System.Drawing.Color.Gray;
+                    this.LB.BackColor = System.Drawing.Color.Transparent;
                     this.LB.Location = new System.Drawing.Point(k, coordinates[i]);
                     this.LB.Size = new System.Drawing.Size(40, 40);
                     this.LB.Enabled = true;
@@ -71,14 +71,14 @@ namespace Mill
                     j++;
                 }
             }
-            CreateLabels(104, coordinates1);
-            CreateLabels(650, coordinates1);
-            CreateLabels(194, coordinates2);
-            CreateLabels(558, coordinates2);
-            CreateLabels(285, coordinates3);
-            CreateLabels(467, coordinates3);
-            CreateLabels(377, c = new short[] { coordinates1[0], coordinates2[0], coordinates3[0]});
-            CreateLabels(377, c = new short[] { coordinates1[2], coordinates2[2], coordinates3[2] });
+            CreateLabels(101, coordinates1);
+            CreateLabels(644, coordinates1);
+            CreateLabels(191, coordinates2);
+            CreateLabels(555, coordinates2);
+            CreateLabels(282, coordinates3);
+            CreateLabels(464, coordinates3);
+            CreateLabels(374, c = new short[] { coordinates1[0], coordinates2[0], coordinates3[0]});
+            CreateLabels(374, c = new short[] { coordinates1[2], coordinates2[2], coordinates3[2] });
             // 
             // Form1
             // 

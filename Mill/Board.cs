@@ -122,25 +122,19 @@ namespace Mill
 
         public void PutStoneOnBoard(bool blackIsPlaying, Label label)
         {
-            Brush blackBrush = new SolidBrush(Color.Black);
-            Brush whiteBrush = new SolidBrush(Color.White);
-
-
-            Graphics g = label.CreateGraphics();
 
             if (blackIsPlaying == true)
             {
-                
-                g.FillEllipse(blackBrush, new Rectangle(label.Location.X, label.Location.Y, 20, 20));
+
+                label.Image = global::Mill.Properties.Resources.black;
                 Form1.textBox1.Text = "White Player";
-                g.Flush();
+                
             }
             else
             {
-                g.FillEllipse(whiteBrush, new Rectangle(label.Location.X, label.Location.Y, 20, 20));
+                label.Image = global::Mill.Properties.Resources.white;
                 Form1.textBox1.Text = "Black Player";
-                g.FillRectangle(whiteBrush, new Rectangle(100, 100, 30, 30)); 
-                g.Flush();
+              
             }
 
 
