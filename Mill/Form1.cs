@@ -14,9 +14,10 @@ namespace Mill
     {
         private enum GamePhase { opening, midPhase, finishing };
         private GamePhase gamePhase = GamePhase.opening;
-        private short openingCounter = 0; 
         private Board board = new Board();
         private bool blackIsPlaying = false;
+        public static short numberOfWhiteStones = 0;
+        public static short numberOfBlackStones = 0;
         public Form1()
         {
             
@@ -27,16 +28,16 @@ namespace Mill
 
         private void OnLabelClick (object sender, EventArgs e)
         {
-            if ((gamePhase == GamePhase.opening) && (openingCounter < 18))
+
+            if ((gamePhase == GamePhase.opening) && (numberOfBlackStones < 9))
             {
                 Label label = sender as Label;
                 if (label != null)
                 {
                     OpeningPhase(board, label);
-                    openingCounter++;
                 }
             }
-            else if ((gamePhase == GamePhase.opening) && (openingCounter == 18))
+            else if ((gamePhase == GamePhase.opening) && (numberOfBlackStones == 9))
             {
                 gamePhase = GamePhase.midPhase;
             }
@@ -53,12 +54,15 @@ namespace Mill
 
         private void OpeningPhase(Board board, Label label)
         {
-            short numberOfWhiteStones = 0;
-            short numberOfBlackStones = 0;
 
             label.Enabled = false;
 
             board.PutStoneOnBoard(blackIsPlaying, label);
+
+            if (board.IsMill())
+            {
+                board.TakeStoneFromBoard(blackIsPlaying);
+            }
 
             blackIsPlaying = !blackIsPlaying;
 

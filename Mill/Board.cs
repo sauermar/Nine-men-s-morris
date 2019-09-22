@@ -122,24 +122,124 @@ namespace Mill
 
         public void PutStoneOnBoard(bool blackIsPlaying, Label label)
         {
+            string labelName = label.Name;
+            short index = GetIndexOfStone(labelName);
+            Tuple<int,int> tupleOfIndexes = GetIndexesOnBoard(index);
 
             if (blackIsPlaying == true)
             {
-
+                
                 label.Image = global::Mill.Properties.Resources.black;
+                Form1.numberOfBlackStones++;
+                board[tupleOfIndexes.Item1, tupleOfIndexes.Item2] = PlaceOnBoardIs.blackOccupied;
                 Form1.textBox1.Text = "White Player";
+                
                 
             }
             else
             {
                 label.Image = global::Mill.Properties.Resources.white;
+                Form1.numberOfWhiteStones++;
+                board[tupleOfIndexes.Item1, tupleOfIndexes.Item2] = PlaceOnBoardIs.whiteOccupied;
                 Form1.textBox1.Text = "Black Player";
               
             }
 
+        }
 
+        private short GetIndexOfStone(string name)
+        {
+            string number = new String(name.Where(Char.IsDigit).ToArray());
+            short num = short.Parse(number);
+            return num;
+        }
 
-            string labelName = label.Name;
+        private Tuple<int,int> GetIndexesOnBoard(short index)
+        {
+            Tuple<int, int> tupleOfIndexes;
+            switch (index)
+            {
+                case 0:
+                    tupleOfIndexes = new Tuple<int, int>(0, 0);
+                    break;
+                case 1:
+                    tupleOfIndexes = new Tuple<int, int>(0,3);
+                    break;
+                case 2:
+                    tupleOfIndexes = new Tuple<int, int>(0,6);
+                    break;
+                case 3:
+                    tupleOfIndexes = new Tuple<int, int>(6, 0);
+                    break;
+                case 4:
+                    tupleOfIndexes = new Tuple<int, int>(6, 3);
+                    break;
+                case 5:
+                    tupleOfIndexes = new Tuple<int, int>(6, 6);
+                    break;
+                case 6:
+                    tupleOfIndexes = new Tuple<int, int>(1, 1);
+                    break;
+                case 7:
+                    tupleOfIndexes = new Tuple<int, int>(1, 3);
+                    break;
+                case 8:
+                    tupleOfIndexes = new Tuple<int, int>(1, 5);
+                    break;
+                case 9:
+                    tupleOfIndexes = new Tuple<int, int>(5, 1);
+                    break;
+                case 10:
+                    tupleOfIndexes = new Tuple<int, int>(5, 3);
+                    break;
+                case 11:
+                    tupleOfIndexes = new Tuple<int, int>(5, 5);
+                    break;
+                case 12:
+                    tupleOfIndexes = new Tuple<int, int>(2, 2);
+                    break;
+                case 13:
+                    tupleOfIndexes = new Tuple<int, int>(2, 3);
+                    break;
+                case 14:
+                    tupleOfIndexes = new Tuple<int, int>(2, 4);
+                    break;
+                case 15:
+                    tupleOfIndexes = new Tuple<int, int>(4, 2);
+                    break;
+                case 16:
+                    tupleOfIndexes = new Tuple<int, int>(4, 3);
+                    break;
+                case 17:
+                    tupleOfIndexes = new Tuple<int, int>(4, 4);
+                    break;
+                case 18:
+                    tupleOfIndexes = new Tuple<int, int>(3, 0);
+                    break;
+                case 19:
+                    tupleOfIndexes = new Tuple<int, int>(3, 1);
+                    break;
+                case 20:
+                    tupleOfIndexes = new Tuple<int, int>(3, 2);
+                    break;
+                case 21:
+                    tupleOfIndexes = new Tuple<int, int>(3, 4);
+                    break;
+                case 22:
+                    tupleOfIndexes = new Tuple<int, int>(3, 5);
+                    break;
+                case 23:
+                    tupleOfIndexes = new Tuple<int, int>(3, 6);
+                    break;
+                default:
+                    tupleOfIndexes = new Tuple<int, int>(-1, -1);
+                    break;
+            }
+            return tupleOfIndexes;
+        }
+
+        public void TakeStoneFromBoard(bool blackIsPlaying)
+        {
 
         }
 
