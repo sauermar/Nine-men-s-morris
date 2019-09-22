@@ -16,8 +16,10 @@ namespace Mill
         private GamePhase gamePhase = GamePhase.opening;
         private Board board = new Board();
         private bool blackIsPlaying = false;
+        private bool takeStone = false;
         public static short numberOfWhiteStones = 0;
         public static short numberOfBlackStones = 0;
+        public static short counter = 0;
         public Form1()
         {
             
@@ -28,25 +30,45 @@ namespace Mill
 
         private void OnLabelClick (object sender, EventArgs e)
         {
-
-            if ((gamePhase == GamePhase.opening) && (numberOfBlackStones < 9))
+            Label label = sender as Label;
+            if (label != null)
             {
-                Label label = sender as Label;
-                if (label != null)
+                if (!takeStone)
                 {
-                    OpeningPhase(board, label);
+                    if (gamePhase == GamePhase.opening)
+                    {
+                        OpeningPhase(board, label);
+                        if (counter == 18)
+                        {
+                            label.Update();
+                            gamePhase = GamePhase.midPhase;
+                            textBox1.Text = "End of the opening phase";
+                            textBox1.Update();
+                            System.Threading.Thread.Sleep(3000);
+                            textBox1.Text = "White Player Starts";
+                        }
+                    }
+                    else if (gamePhase == GamePhase.midPhase)
+                    {
+                        label.Image = global::Mill.Properties.Resources.;
+                    }
                 }
-            }
-            else if ((gamePhase == GamePhase.opening) && (numberOfBlackStones == 9))
-            {
-                gamePhase = GamePhase.midPhase;
-            }
-            else if (gamePhase == GamePhase.midPhase)
-            {
-                Label label = sender as Label;
-                if (label != null)
+                else
                 {
-
+                    bool confirmation = board.TakeStoneFromBoard(blackIsPlaying, label);
+                    if (confirmation)
+                    {
+                        takeStone = false;
+                        blackIsPlaying = !blackIsPlaying;
+                        if(blackIsPlaying)
+                        {
+                            textBox1.Text = "Black Player";
+                        }
+                        else
+                        {
+                            textBox1.Text = "White Player";
+                        }
+                    }
                 }
             }
 
@@ -55,19 +77,19 @@ namespace Mill
         private void OpeningPhase(Board board, Label label)
         {
 
-            label.Enabled = false;
-
-            board.PutStoneOnBoard(blackIsPlaying, label);
+            if (board.PutStoneOnBoard(blackIsPlaying, label))
+            {
+                counter++;
+                blackIsPlaying = !blackIsPlaying;
+            }
 
             if (board.IsMill())
             {
-                board.TakeStoneFromBoard(blackIsPlaying);
+                blackIsPlaying = !blackIsPlaying;
+                textBox1.Text = "Mill, take opponent's stone";
+                takeStone = true;
             }
-
-            blackIsPlaying = !blackIsPlaying;
-
         }
-
 
     }
 }

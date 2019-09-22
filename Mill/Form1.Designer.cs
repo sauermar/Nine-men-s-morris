@@ -46,7 +46,7 @@ namespace Mill
             textBox1.ShortcutsEnabled = false;
             textBox1.Size = new System.Drawing.Size(782, 48);
             textBox1.TabIndex = 0;
-            textBox1.Text = "White Player";
+            textBox1.Text = "White Player Starts";
             textBox1.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             //
             //labels
@@ -78,7 +78,7 @@ namespace Mill
             CreateLabels(282, coordinates3);
             CreateLabels(464, coordinates3);
             CreateLabels(374, c = new short[] { coordinates1[0], coordinates2[0], coordinates3[0]});
-            CreateLabels(374, c = new short[] { coordinates1[2], coordinates2[2], coordinates3[2] });
+            CreateLabels(374, c = new short[] { coordinates3[2], coordinates2[2], coordinates1[2] });
             // 
             // Form1
             // 

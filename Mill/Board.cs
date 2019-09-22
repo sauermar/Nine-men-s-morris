@@ -10,19 +10,21 @@ namespace Mill
 {
     class Board
     {
-        public enum PlaceOnBoardIs { free, whiteOccupied, blackOccupied, blackMill, whiteMill, movable, notMovable }
+        public enum PlaceOnBoardIs { free, whiteOccupied, blackOccupied, movable, notMovable }
         private PlaceOnBoardIs[,] board = new PlaceOnBoardIs[7, 7];
+        private Mill[] whiteMills = new Mill[4];
+        private Mill[] blackMills = new Mill[4];
         public void CreateBoard()
         { 
             for (int i = 0; i < 7; i++)
             {
                 for(int j = 0; j < 7; j++)
                 {
-                    if (i == j) 
+                    if ((i == j) || (i + j == 6))
                     {
                         board[i, j] = PlaceOnBoardIs.free;
                     }
-                    else
+                    else 
                     {
                         board[i, j] = PlaceOnBoardIs.movable;
                     }
@@ -36,44 +38,90 @@ namespace Mill
             }
 
             board[3, 3] = PlaceOnBoardIs.notMovable;
+
+            //for security inicializing arrays of Mill type to null
+            for(int i = 0; i < 4; i++)
+            {
+                whiteMills[i] = null;
+                blackMills[i] = null;
+            }
         }
 
         private bool ReportMill(int j, int a, int b, int c)
         {
+
             if ((board[a, j] == PlaceOnBoardIs.whiteOccupied) && (board[b, j] == PlaceOnBoardIs.whiteOccupied)
                             && (board[c, j] == PlaceOnBoardIs.whiteOccupied))
             {
-                board[a, j] = PlaceOnBoardIs.whiteMill;
-                board[b, j] = PlaceOnBoardIs.whiteMill;
-                board[c, j] = PlaceOnBoardIs.whiteMill;
-                return true;
+                //creates the mill always
+                Mill mill = new Mill(a, j, b, j, c, j, false);
+                if (MillLogic(whiteMills, mill))
+                {
+                    return true;
+                }
+                
             }
             else if ((board[a, j] == PlaceOnBoardIs.blackOccupied) && (board[b, j] == PlaceOnBoardIs.blackOccupied)
                 && (board[c, j] == PlaceOnBoardIs.blackOccupied))
-            {
-                board[a, j] = PlaceOnBoardIs.blackMill;
-                board[b, j] = PlaceOnBoardIs.blackMill;
-                board[c, j] = PlaceOnBoardIs.blackMill;
-                return true;
-            }
+                 {
+                    Mill mill = new Mill(a, j, b, j, c, j, true);
+                    if (MillLogic(blackMills, mill))
+                    {
+                        return true;
+                    }
+                 }
 
             if ((board[j, a] == PlaceOnBoardIs.whiteOccupied) && (board[j, b] == PlaceOnBoardIs.whiteOccupied)
                && (board[j, c] == PlaceOnBoardIs.whiteOccupied))
             {
-                board[j, a] = PlaceOnBoardIs.whiteMill;
-                board[j, b] = PlaceOnBoardIs.whiteMill;
-                board[j, c] = PlaceOnBoardIs.whiteMill;
-                return true;
+                Mill mill = new Mill(j, a, j, b, j, c, false);
+                if (MillLogic(whiteMills, mill))
+                {
+                    return true;
+                }
             }
             else if ((board[j, a] == PlaceOnBoardIs.blackOccupied) && (board[j, b] == PlaceOnBoardIs.blackOccupied)
                && (board[j, c] == PlaceOnBoardIs.blackOccupied))
+                 {
+                    Mill mill = new Mill(j, a, j, b, j, c, true);
+                    if (MillLogic(blackMills, mill))
+                    {
+                        return true;
+                    }
+                 }
+            return false;
+        }
+
+        //method avoids repeating code in ReportMill method
+        private bool MillLogic(Mill[] mills, Mill mill)
+        {
+            bool millAlreadyExist = false;
+
+            //controles if the mill already exists
+            for (int i = 0; i < 4; i++)
             {
-                board[j, a] = PlaceOnBoardIs.blackMill;
-                board[j, b] = PlaceOnBoardIs.blackMill;
-                board[j, c] = PlaceOnBoardIs.blackMill;
+                if (mills[i] != null)
+                {
+                    if (Mill.Equal(mills[i], mill))
+                    {
+                        millAlreadyExist = true;
+                        break;
+                    }
+                }
+            }
+            //if not adds him to the array of mills and returns true for detecting a mill 
+            if (!millAlreadyExist)
+            {
+                for (int k = 0; k < 4; k++)
+                {
+                    if (mills[k] == null)
+                    {
+                        mills[k] = mill;
+                        break;
+                    }
+                }
                 return true;
             }
-
             return false;
         }
 
@@ -120,33 +168,39 @@ namespace Mill
             return false;
         }
 
-        public void PutStoneOnBoard(bool blackIsPlaying, Label label)
+        public bool PutStoneOnBoard(bool blackIsPlaying, Label label) 
         {
             string labelName = label.Name;
             short index = GetIndexOfStone(labelName);
-            Tuple<int,int> tupleOfIndexes = GetIndexesOnBoard(index);
+            Tuple<int, int> tupleOfIndexes = Linking.GetIndexesOnBoard(index);
 
-            if (blackIsPlaying == true)
+            if (board[tupleOfIndexes.Item1, tupleOfIndexes.Item2] == PlaceOnBoardIs.free)
             {
-                
-                label.Image = global::Mill.Properties.Resources.black;
-                Form1.numberOfBlackStones++;
-                board[tupleOfIndexes.Item1, tupleOfIndexes.Item2] = PlaceOnBoardIs.blackOccupied;
-                Form1.textBox1.Text = "White Player";
-                
-                
-            }
-            else
-            {
-                label.Image = global::Mill.Properties.Resources.white;
-                Form1.numberOfWhiteStones++;
-                board[tupleOfIndexes.Item1, tupleOfIndexes.Item2] = PlaceOnBoardIs.whiteOccupied;
-                Form1.textBox1.Text = "Black Player";
-              
-            }
 
+                if (blackIsPlaying == true)
+                {
+
+                    label.Image = global::Mill.Properties.Resources.black;
+                    Form1.numberOfBlackStones++;
+                    board[tupleOfIndexes.Item1, tupleOfIndexes.Item2] = PlaceOnBoardIs.blackOccupied;
+                    if (Form1.counter < 17)
+                    {
+                        Form1.textBox1.Text = "White Player";
+                    }
+
+                }
+                else
+                {
+                    label.Image = global::Mill.Properties.Resources.white;
+                    Form1.numberOfWhiteStones++;
+                    board[tupleOfIndexes.Item1, tupleOfIndexes.Item2] = PlaceOnBoardIs.whiteOccupied;
+                    Form1.textBox1.Text = "Black Player";
+
+                }
+                return true;
+            }
+            return false;
         }
-
         private short GetIndexOfStone(string name)
         {
             string number = new String(name.Where(Char.IsDigit).ToArray());
@@ -154,95 +208,65 @@ namespace Mill
             return num;
         }
 
-        private Tuple<int,int> GetIndexesOnBoard(short index)
+        public bool TakeStoneFromBoard(bool blackIsPlaying, Label label)
         {
-            Tuple<int, int> tupleOfIndexes;
-            switch (index)
+            string labelName = label.Name;
+            short index = GetIndexOfStone(labelName);
+            Tuple<int, int> tupleOfIndexes = Linking.GetIndexesOnBoard(index);
+
+            if (blackIsPlaying)
             {
-                case 0:
-                    tupleOfIndexes = new Tuple<int, int>(0, 0);
-                    break;
-                case 1:
-                    tupleOfIndexes = new Tuple<int, int>(0,3);
-                    break;
-                case 2:
-                    tupleOfIndexes = new Tuple<int, int>(0,6);
-                    break;
-                case 3:
-                    tupleOfIndexes = new Tuple<int, int>(6, 0);
-                    break;
-                case 4:
-                    tupleOfIndexes = new Tuple<int, int>(6, 3);
-                    break;
-                case 5:
-                    tupleOfIndexes = new Tuple<int, int>(6, 6);
-                    break;
-                case 6:
-                    tupleOfIndexes = new Tuple<int, int>(1, 1);
-                    break;
-                case 7:
-                    tupleOfIndexes = new Tuple<int, int>(1, 3);
-                    break;
-                case 8:
-                    tupleOfIndexes = new Tuple<int, int>(1, 5);
-                    break;
-                case 9:
-                    tupleOfIndexes = new Tuple<int, int>(5, 1);
-                    break;
-                case 10:
-                    tupleOfIndexes = new Tuple<int, int>(5, 3);
-                    break;
-                case 11:
-                    tupleOfIndexes = new Tuple<int, int>(5, 5);
-                    break;
-                case 12:
-                    tupleOfIndexes = new Tuple<int, int>(2, 2);
-                    break;
-                case 13:
-                    tupleOfIndexes = new Tuple<int, int>(2, 3);
-                    break;
-                case 14:
-                    tupleOfIndexes = new Tuple<int, int>(2, 4);
-                    break;
-                case 15:
-                    tupleOfIndexes = new Tuple<int, int>(4, 2);
-                    break;
-                case 16:
-                    tupleOfIndexes = new Tuple<int, int>(4, 3);
-                    break;
-                case 17:
-                    tupleOfIndexes = new Tuple<int, int>(4, 4);
-                    break;
-                case 18:
-                    tupleOfIndexes = new Tuple<int, int>(3, 0);
-                    break;
-                case 19:
-                    tupleOfIndexes = new Tuple<int, int>(3, 1);
-                    break;
-                case 20:
-                    tupleOfIndexes = new Tuple<int, int>(3, 2);
-                    break;
-                case 21:
-                    tupleOfIndexes = new Tuple<int, int>(3, 4);
-                    break;
-                case 22:
-                    tupleOfIndexes = new Tuple<int, int>(3, 5);
-                    break;
-                case 23:
-                    tupleOfIndexes = new Tuple<int, int>(3, 6);
-                    break;
-                default:
-                    tupleOfIndexes = new Tuple<int, int>(-1, -1);
-                    break;
+                if (board[tupleOfIndexes.Item1, tupleOfIndexes.Item2] == PlaceOnBoardIs.whiteOccupied)
+                {
+                    label.Image = null;
+                    Form1.numberOfWhiteStones--;
+                    // delete all existing mills with the chosen stone
+                    for(int i = 0; i < 4; i++)
+                    {
+                        if (whiteMills[i] != null)
+                        {
+                            if (((tupleOfIndexes.Item1 == whiteMills[i].Stone1.Item1) && (tupleOfIndexes.Item2 == whiteMills[i].Stone1.Item2)) ||
+                              ((tupleOfIndexes.Item1 == whiteMills[i].Stone2.Item1) && (tupleOfIndexes.Item2 == whiteMills[i].Stone2.Item2)) ||
+                              ((tupleOfIndexes.Item1 == whiteMills[i].Stone3.Item1) && (tupleOfIndexes.Item2 == whiteMills[i].Stone3.Item2)))
+                            {
+                                whiteMills[i] = null;
+                            }
+                        }
+                    }
+                    //set the place of the stone on free
+                    board[tupleOfIndexes.Item1, tupleOfIndexes.Item2] = PlaceOnBoardIs.free;
+                    //confirm
+                    return true;
+                }
             }
-            return tupleOfIndexes;
+            else
+            {
+                if (board[tupleOfIndexes.Item1, tupleOfIndexes.Item2] == PlaceOnBoardIs.blackOccupied)
+                {
+                    label.Image = null;
+                    Form1.numberOfBlackStones--;
+                    // delete all existing mills with the chosen stone
+                    for (int i = 0; i < 4; i++)
+                    {
+                        if (blackMills[i] != null)
+                        {
+                            if (((tupleOfIndexes.Item1 == blackMills[i].Stone1.Item1) && (tupleOfIndexes.Item2 == blackMills[i].Stone1.Item2)) ||
+                              ((tupleOfIndexes.Item1 == blackMills[i].Stone2.Item1) && (tupleOfIndexes.Item2 == blackMills[i].Stone2.Item2)) ||
+                              ((tupleOfIndexes.Item1 == blackMills[i].Stone3.Item1) && (tupleOfIndexes.Item2 == blackMills[i].Stone3.Item2)))
+                            {
+                                blackMills[i] = null;
+                            }
+                        }
+                    }
+                    //free the chosen place
+                    board[tupleOfIndexes.Item1, tupleOfIndexes.Item2] = PlaceOnBoardIs.free;
+                    //confirm
+                    return true;
+                }
+            }
+            //if the place clicked is free
+            return false;
         }
 
-        public void TakeStoneFromBoard(bool blackIsPlaying)
-        {
-
-        }
-
-  
     }
 }
