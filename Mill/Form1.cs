@@ -17,6 +17,7 @@ namespace Mill
         private Board board = new Board();
         private bool blackIsPlaying = false;
         private bool takeStone = false;
+        public static bool slideStone = false;
         public static short numberOfWhiteStones = 0;
         public static short numberOfBlackStones = 0;
         public static short counter = 0;
@@ -37,7 +38,7 @@ namespace Mill
                 {
                     if (gamePhase == GamePhase.opening)
                     {
-                        OpeningPhase(board, label);
+                        OpeningPhase(label);
                         if (counter == 18)
                         {
                             label.Update();
@@ -50,7 +51,33 @@ namespace Mill
                     }
                     else if (gamePhase == GamePhase.midPhase)
                     {
-                        label.Image = global::Mill.Properties.Resources.;
+                       if ((numberOfBlackStones == 3) || (numberOfWhiteStones == 3))
+                        {
+                            //FinishingPhase
+                        }
+                        else if (slideStone)
+                        {
+                            if (board.SlideStone(blackIsPlaying, label))
+                            {
+                                slideStone = false;
+
+                                if (board.IsMill())
+                                {
+                                    textBox1.Text = "Mill, take opponent's stone";
+                                    takeStone = true;
+                                }
+                                else
+                                {
+                                    blackIsPlaying = !blackIsPlaying;
+                                    if (blackIsPlaying) { textBox1.Text = "Black Player"; }
+                                    else { textBox1.Text = "White Player"; }
+                                }
+                            }
+                        }
+                       else
+                        {
+                            MidGamePhase(label);
+                        }
                     }
                 }
                 else
@@ -74,7 +101,7 @@ namespace Mill
 
         }
 
-        private void OpeningPhase(Board board, Label label)
+        private void OpeningPhase(Label label)
         {
 
             if (board.PutStoneOnBoard(blackIsPlaying, label))
@@ -91,5 +118,12 @@ namespace Mill
             }
         }
 
+        private void MidGamePhase(Label label)
+        {
+            if (board.CanStoneBeSlided(blackIsPlaying, label))
+            {
+                slideStone = true;
+            }
+        }
     }
 }

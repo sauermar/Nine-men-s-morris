@@ -14,6 +14,8 @@ namespace Mill
         private PlaceOnBoardIs[,] board = new PlaceOnBoardIs[7, 7];
         private Mill[] whiteMills = new Mill[4];
         private Mill[] blackMills = new Mill[4];
+        private Label OldLabel;
+        private Tuple<int, int>[] vacances = new Tuple<int, int>[4];
         public void CreateBoard()
         { 
             for (int i = 0; i < 7; i++)
@@ -220,19 +222,7 @@ namespace Mill
                 {
                     label.Image = null;
                     Form1.numberOfWhiteStones--;
-                    // delete all existing mills with the chosen stone
-                    for(int i = 0; i < 4; i++)
-                    {
-                        if (whiteMills[i] != null)
-                        {
-                            if (((tupleOfIndexes.Item1 == whiteMills[i].Stone1.Item1) && (tupleOfIndexes.Item2 == whiteMills[i].Stone1.Item2)) ||
-                              ((tupleOfIndexes.Item1 == whiteMills[i].Stone2.Item1) && (tupleOfIndexes.Item2 == whiteMills[i].Stone2.Item2)) ||
-                              ((tupleOfIndexes.Item1 == whiteMills[i].Stone3.Item1) && (tupleOfIndexes.Item2 == whiteMills[i].Stone3.Item2)))
-                            {
-                                whiteMills[i] = null;
-                            }
-                        }
-                    }
+                    DeleteAllMillsWithStone(tupleOfIndexes.Item1, tupleOfIndexes.Item2, whiteMills);
                     //set the place of the stone on free
                     board[tupleOfIndexes.Item1, tupleOfIndexes.Item2] = PlaceOnBoardIs.free;
                     //confirm
@@ -245,19 +235,7 @@ namespace Mill
                 {
                     label.Image = null;
                     Form1.numberOfBlackStones--;
-                    // delete all existing mills with the chosen stone
-                    for (int i = 0; i < 4; i++)
-                    {
-                        if (blackMills[i] != null)
-                        {
-                            if (((tupleOfIndexes.Item1 == blackMills[i].Stone1.Item1) && (tupleOfIndexes.Item2 == blackMills[i].Stone1.Item2)) ||
-                              ((tupleOfIndexes.Item1 == blackMills[i].Stone2.Item1) && (tupleOfIndexes.Item2 == blackMills[i].Stone2.Item2)) ||
-                              ((tupleOfIndexes.Item1 == blackMills[i].Stone3.Item1) && (tupleOfIndexes.Item2 == blackMills[i].Stone3.Item2)))
-                            {
-                                blackMills[i] = null;
-                            }
-                        }
-                    }
+                    DeleteAllMillsWithStone(tupleOfIndexes.Item1, tupleOfIndexes.Item2, blackMills);
                     //free the chosen place
                     board[tupleOfIndexes.Item1, tupleOfIndexes.Item2] = PlaceOnBoardIs.free;
                     //confirm
@@ -268,5 +246,224 @@ namespace Mill
             return false;
         }
 
+        private void DeleteAllMillsWithStone(int x, int y, Mill[] mills)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                if (mills[i] != null)
+                {
+                    if (((x == mills[i].Stone1.Item1) && (y == mills[i].Stone1.Item2)) ||
+                      ((x == mills[i].Stone2.Item1) && (y == mills[i].Stone2.Item2)) ||
+                      ((x == mills[i].Stone3.Item1) && (y == mills[i].Stone3.Item2)))
+                    {
+                        mills[i] = null;
+                    }
+                }
+            }
+        }
+
+        public bool CanStoneBeSlided(bool blackIsPlaying, Label label)
+        {
+            string labelName = label.Name;
+            short index = GetIndexOfStone(labelName);
+            OldLabel = label;
+            Tuple<int, int> tupleOfIndexes = Linking.GetIndexesOnBoard(index);
+
+            if (blackIsPlaying)
+            {
+                if(board[tupleOfIndexes.Item1,tupleOfIndexes.Item2] == PlaceOnBoardIs.blackOccupied)
+                {
+                    vacances = GetAdjacentVacantPositions(tupleOfIndexes.Item1, tupleOfIndexes.Item2);
+
+                    if (IsAnyPositionVacante(vacances))
+                    {
+                        label.Image = Properties.Resources.white; //potrebuju obrazky
+                        DeleteAllMillsWithStone(tupleOfIndexes.Item1, tupleOfIndexes.Item2, blackMills);
+                        board[tupleOfIndexes.Item1, tupleOfIndexes.Item2] = PlaceOnBoardIs.free;
+                        return true;
+                    }
+                    else
+                    {
+                        Form1.textBox1.Text = "Invalid Option";
+                        Form1.textBox1.Update();
+                        System.Threading.Thread.Sleep(1500);
+                        Form1.textBox1.Text = "Black Player";
+                        return false;
+                    }
+                    
+                }
+            }
+            else
+            {
+                if (board[tupleOfIndexes.Item1, tupleOfIndexes.Item2] == PlaceOnBoardIs.whiteOccupied)
+                {
+                     vacances = GetAdjacentVacantPositions(tupleOfIndexes.Item1, tupleOfIndexes.Item2);
+
+                    if (IsAnyPositionVacante(vacances))
+                    {
+                        label.Image = Properties.Resources.black; //potrebuju obrazky
+                        DeleteAllMillsWithStone(tupleOfIndexes.Item1, tupleOfIndexes.Item2, whiteMills);
+                        board[tupleOfIndexes.Item1, tupleOfIndexes.Item2] = PlaceOnBoardIs.free;
+                        return true;
+                    }
+                    else
+                    {
+                        Form1.textBox1.Text = "Invalid Option";
+                        Form1.textBox1.Update();
+                        System.Threading.Thread.Sleep(1500);
+                        Form1.textBox1.Text = "White Player";
+                        return false;
+                    }
+                }
+            }
+            return false;
+        }
+
+        private Tuple<int,int>[] GetAdjacentVacantPositions(int x, int y)
+        {
+            //vacantPositions[0] = left neighbour if any
+            //vacantPositions[1] = right neighbour if any
+            //vacantPositions[2] = upper neighbour if any
+            //vacantPositions[3] = downer neighbour if any
+            Tuple<int, int>[] vacantPositions = { new Tuple<int,int>(-1, -1), new Tuple<int, int>(-1, -1),
+                                                  new Tuple<int, int>(-1, -1), new Tuple<int, int>(-1, -1) };
+            int a;
+            //go to left
+            if(x > 0)
+            {
+                a = x - 1;
+                do
+                {
+                    if (board[a, y] == PlaceOnBoardIs.free)
+                    {
+                        vacantPositions[0] = new Tuple<int, int>(a, y);
+                        break;
+                    }
+                    else if (board[a, y] == PlaceOnBoardIs.movable)
+                    {
+                        --a;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                } while (a != -1);
+            }
+            //go to right
+            if (x < 6)
+            {
+                a = x + 1;
+                do
+                {
+                    if (board[a, y] == PlaceOnBoardIs.free)
+                    {
+                        vacantPositions[1] = new Tuple<int, int>(a, y);
+                        break;
+                    }
+                    else if (board[a, y] == PlaceOnBoardIs.movable)
+                    {
+                        ++a;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                } while (a != 7);
+            }
+            //go up
+            if (y > 0)
+            {
+                a = y - 1;
+                do
+                {
+                    if (board[x, a] == PlaceOnBoardIs.free)
+                    {
+                        vacantPositions[2] = new Tuple<int, int>(x, a);
+                        break;
+                    }
+                    else if (board[x, a] == PlaceOnBoardIs.movable)
+                    {
+                        --a;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                } while (a != -1);
+            }
+            //go down
+            if (y < 6)
+            {
+                a = y + 1;
+                do
+                {
+                    if (board[x, a] == PlaceOnBoardIs.free)
+                    {
+                        vacantPositions[3] = new Tuple<int, int>(x, a);
+                        break;
+                    }
+                    else if (board[x, a] == PlaceOnBoardIs.movable)
+                    {
+                        ++a;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                } while (a != 7);
+            }
+
+            return vacantPositions;
+        }
+
+        private bool IsAnyPositionVacante(Tuple<int,int>[] vacantPositions)
+        {
+            for(int i = 0; i < 4; i++)
+            {
+                if(vacantPositions[i].Item1 != -1)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public bool SlideStone(bool blackIsPlaying, Label label)
+        {
+            bool validPlace = false;
+            string labelName = label.Name;
+            short index = GetIndexOfStone(labelName);
+            Tuple<int, int> tupleOfIndexes = Linking.GetIndexesOnBoard(index);
+
+           for(int i = 0; i < 4; i++)
+            {
+                if(vacances[i].Item1 != -1)
+                {
+                    if ((vacances[i].Item1 == tupleOfIndexes.Item1) && (vacances[i].Item2 == tupleOfIndexes.Item2))
+                    {
+                        validPlace = true;
+                        break;
+                    }
+                }
+            }
+            if (validPlace)
+            {
+                if (blackIsPlaying)
+                {
+                    label.Image = Properties.Resources.black;
+                    board[tupleOfIndexes.Item1, tupleOfIndexes.Item2] = PlaceOnBoardIs.blackOccupied;
+                    OldLabel.Image = null;
+                    return true;
+                }
+                else
+                { 
+                    label.Image = Properties.Resources.white;
+                    board[tupleOfIndexes.Item1, tupleOfIndexes.Item2] = PlaceOnBoardIs.whiteOccupied;
+                    OldLabel.Image = null;
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }
