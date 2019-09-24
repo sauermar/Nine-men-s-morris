@@ -127,4 +127,10 @@
   <data name="white" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\bin\images\white.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="blackchosen" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\bin\images\blackchosen.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="whitechosen" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>whitechosen.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

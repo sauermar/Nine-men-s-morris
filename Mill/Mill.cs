@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Mill
 {
     //class representing a structure of three stones creating a mill
-    class Mill
+    public class Mill
     {
         public Tuple<int, int> Stone1 { get; }
         public Tuple<int, int> Stone2 { get; }

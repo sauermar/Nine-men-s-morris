@@ -92,5 +92,89 @@ namespace Mill
             }
             return tupleOfIndexes;
         }
+
+        public static string GetLabelName(Tuple<int,int> indexes)
+        {
+            string labelName = string.Empty;
+            switch (indexes)
+            {
+                case var t when t.Item1 == 0 && t.Item2 == 0:
+                    labelName = "label0";
+                    break;
+                case var t when t.Item1 == 0 && t.Item2 == 3:
+                    labelName = "label1";
+                    break;
+                case var t when t.Item1 == 0 && t.Item2 == 6:
+                    labelName = "label2";
+                    break;
+                case var t when t.Item1 == 6 && t.Item2 == 0:
+                    labelName = "label3";
+                    break;
+                case var t when t.Item1 == 6 && t.Item2 == 3:
+                    labelName = "label4";
+                    break;
+                case var t when t.Item1 == 6 && t.Item2 == 6:
+                    labelName = "label5";
+                    break;
+                case var t when t.Item1 == 1 && t.Item2 == 1:
+                    labelName = "label6";
+                    break;
+                case var t when t.Item1 == 1 && t.Item2 == 3:
+                    labelName = "label7";
+                    break;
+                case var t when t.Item1 == 1 && t.Item2 == 5:
+                    labelName = "label8";
+                    break;
+                case var t when t.Item1 == 5 && t.Item2 == 1:
+                    labelName = "label9";
+                    break;
+                case var t when t.Item1 == 5 && t.Item2 == 3:
+                    labelName = "label10";
+                    break;
+                case var t when t.Item1 == 5 && t.Item2 == 5:
+                    labelName = "label11";
+                    break;
+                case var t when t.Item1 == 2 && t.Item2 == 2:
+                    labelName = "label12";
+                    break;
+                case var t when t.Item1 == 2 && t.Item2 == 3:
+                    labelName = "label13";
+                    break;
+                case var t when t.Item1 == 2 && t.Item2 == 4:
+                    labelName = "label14";
+                    break;
+                case var t when t.Item1 == 4 && t.Item2 == 2:
+                    labelName = "label15";
+                    break;
+                case var t when t.Item1 == 4 && t.Item2 == 3:
+                    labelName = "label16";
+                    break;
+                case var t when t.Item1 == 4 && t.Item2 == 4:
+                    labelName = "label17";
+                    break;
+                case var t when t.Item1 == 3 && t.Item2 == 0:
+                    labelName = "label18";
+                    break;
+                case var t when t.Item1 == 3 && t.Item2 == 1:
+                    labelName = "label19";
+                    break;
+                case var t when t.Item1 == 3 && t.Item2 == 2:
+                    labelName = "label20";
+                    break;
+                case var t when t.Item1 == 3 && t.Item2 == 4:
+                    labelName = "label21";
+                    break;
+                case var t when t.Item1 == 3 && t.Item2 == 5:
+                    labelName = "label22";
+                    break;
+                case var t when t.Item1 == 3 && t.Item2 == 6:
+                    labelName = "label23";
+                    break;
+                default:
+                    labelName = string.Empty;
+                    break;
+            }
+            return labelName;
+        }
     }
 }

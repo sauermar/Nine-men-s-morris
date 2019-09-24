@@ -73,6 +73,16 @@ namespace Mill.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap blackchosen {
+            get {
+                object obj = ResourceManager.GetObject("blackchosen", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap millBoardFinished {
             get {
                 object obj = ResourceManager.GetObject("millBoardFinished", resourceCulture);
@@ -86,6 +96,16 @@ namespace Mill.Properties {
         internal static System.Drawing.Bitmap white {
             get {
                 object obj = ResourceManager.GetObject("white", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap whitechosen {
+            get {
+                object obj = ResourceManager.GetObject("whitechosen", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
