@@ -46,7 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AlfaBetaAI.cs" />
+    <Compile Include="AI\AlfaBetaAI.cs" />
     <Compile Include="Board.cs" />
     <Compile Include="BoardEvaluation\BoardEvaluationInterface.cs" />
     <Compile Include="BoardEvaluation\Heuristics.cs" />
@@ -58,11 +58,11 @@
     </Compile>
     <Compile Include="Linking.cs" />
     <Compile Include="Mill.cs" />
-    <Compile Include="MinimaxAI.cs" />
+    <Compile Include="AI\MinimaxAI.cs" />
     <Compile Include="Move.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TakeStoneHeuristic.cs" />
+    <Compile Include="AI\TakeStoneHeuristic.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

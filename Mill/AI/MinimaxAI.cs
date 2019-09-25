@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Mill.BoardEvaluation;
 
-namespace Mill
+namespace Mill.AI
 {
     class MinimaxAI
     {

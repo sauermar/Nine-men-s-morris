@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
 using Mill.BoardEvaluation;
+using Mill.AI;
 
 namespace Mill
 {

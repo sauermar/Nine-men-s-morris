@@ -239,6 +239,7 @@ namespace Mill
             this.BackgroundImage = global::Mill.Properties.Resources.millBoardFinished;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.ClientSize = new System.Drawing.Size(782, 753);
+            this.MaximizeBox = false;
             this.Controls.Add(textBox1);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.button2);
