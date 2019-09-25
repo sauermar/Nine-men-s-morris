@@ -27,11 +27,11 @@ namespace Mill.BoardEvaluation
         {
             public int EvaluateBoardState(Board board, bool blackIsPlaying, Board.PlaceOnBoardIs[,] copiedBoard)
             {
-                if (!blackIsPlaying)
+                if (blackIsPlaying == false)
                 {
-                    return board.CountMills(blackIsPlaying, copiedBoard) * 10;
+                    return board.CountMills(false, copiedBoard) * 10;
                 }
-                else return board.CountMills(blackIsPlaying, copiedBoard) * (-10);
+                else return board.CountMills(true, copiedBoard) * (-10);
             }
         }
 }

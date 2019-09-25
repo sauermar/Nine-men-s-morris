@@ -7,24 +7,24 @@ using Mill.BoardEvaluation;
 
 namespace Mill
 {
-    class MinimaxAI
+    class AlfaBetaAI
     {
         private IBoardEvaluationHeuristic _boardEvaluationHeuristic;
         private const int Depth = 5;
         private TakeStoneHeuristic takestoneHeuristic = new TakeStoneHeuristic();
-        private  Mill[] whiteMills = new Mill[4];
-        private  Mill[] blackMills = new Mill[4];
+        private Mill[] whiteMills = new Mill[4];
+        private Mill[] blackMills = new Mill[4];
         Move nextMaxMove;
         Move nextMinMove;
 
-        public MinimaxAI(IBoardEvaluationHeuristic boardEvaluationHeuristic)
+        public AlfaBetaAI(IBoardEvaluationHeuristic boardEvaluationHeuristic)
         {
             _boardEvaluationHeuristic = boardEvaluationHeuristic;
         }
 
-        public Move AIMinimaxMove(Board board, bool blackIsPlaying)
+        public Move AIAlfaBetaMove(Board board, bool blackIsPlaying)
         {
-            int bestMoveValue = Minimax(board, Depth, blackIsPlaying, board.board );
+            int bestMoveValue = AlfaBeta(board, Depth, Int32.MinValue, Int32.MaxValue, blackIsPlaying, board.board);
             Move moveresult;
 
             if (blackIsPlaying)
@@ -38,7 +38,7 @@ namespace Mill
             return moveresult;
         }
 
-        private int Minimax(Board board, int depth, bool blackIsPlaying, Board.PlaceOnBoardIs[,] currentBoard)
+        private int AlfaBeta(Board board, int depth, int alpha, int beta, bool blackIsPlaying, Board.PlaceOnBoardIs[,] currentBoard)
         {
             if (depth == 0)
             {
@@ -51,7 +51,7 @@ namespace Mill
                 int maxEval = Int32.MinValue;
                 foreach (Move possibleMove in board.GetIndexesOfPossibleMoves(blackIsPlaying, currentBoard))
                 {
-                    
+
                     if ((possibleMove != null) && (possibleMove.To.Item1 != -1))
                     {
                         Board.PlaceOnBoardIs[,] copiedBoard = board.CopyBoard(currentBoard);
@@ -69,23 +69,28 @@ namespace Mill
                         {
                             copiedBoard = TakeStone(copiedBoard, blackIsPlaying);
                         }
-                        int eval = Minimax(board, depth - 1, !blackIsPlaying, copiedBoard);
+                        int eval = AlfaBeta(board, depth - 1, alpha, beta, !blackIsPlaying, copiedBoard);
                         if (depth == Depth && eval > maxEval)
                         {
                             nextMaxMove = possibleMove;
                         }
                         maxEval = Math.Max(maxEval, eval);
+                        alpha = Math.Max(alpha, eval);
+                        if (beta <= alpha)
+                        {
+                            break;
+                        }
                     }
                 }
-              return maxEval;
-                
+                return maxEval;
+
             }
             else
             {
                 int minEval = Int32.MaxValue;
                 foreach (Move possibleMove in board.GetIndexesOfPossibleMoves(blackIsPlaying, currentBoard))
                 {
-                    
+
                     if ((possibleMove != null) && (possibleMove.To.Item1 != -1))
                     {
                         Board.PlaceOnBoardIs[,] copiedBoard = board.CopyBoard(currentBoard);
@@ -106,12 +111,17 @@ namespace Mill
                         {
                             copiedBoard = TakeStone(copiedBoard, blackIsPlaying);
                         }
-                        int eval = Minimax(board, depth - 1, !blackIsPlaying, copiedBoard);
+                        int eval = AlfaBeta(board, depth - 1, alpha, beta, !blackIsPlaying, copiedBoard);
                         if (depth == Depth && eval < minEval)
                         {
                             nextMinMove = possibleMove;
                         }
                         minEval = Math.Min(minEval, eval);
+                        beta = Math.Min(beta, eval);
+                        if (beta <= alpha)
+                        {
+                            break;
+                        }
                     }
                 }
                 return minEval;
@@ -120,7 +130,7 @@ namespace Mill
 
         private Board.PlaceOnBoardIs[,] TakeStone(Board.PlaceOnBoardIs[,] board, bool blackIsPlaying)
         {
-            Tuple<int,int> tupleOfINdexes = takestoneHeuristic.ChooseWhichStone(blackIsPlaying, board);
+            Tuple<int, int> tupleOfINdexes = takestoneHeuristic.ChooseWhichStone(blackIsPlaying, board);
             board[tupleOfINdexes.Item1, tupleOfINdexes.Item2] = Board.PlaceOnBoardIs.free;
             return board;
         }

@@ -42,6 +42,9 @@ namespace Mill
             this.easyToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.mediumToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.aIVsAIToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.easyToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.mediumToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.mediumToolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
 
@@ -101,13 +104,14 @@ namespace Mill
             this.easyToolStripMenuItem.Name = "easyToolStripMenuItem";
             this.easyToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
             this.easyToolStripMenuItem.Text = "Minimax";
-            this.easyToolStripMenuItem.Click += HumanVsMinimax;
+            this.easyToolStripMenuItem.Click += HumanVsMinimaxClick;
             // 
             // mediumToolStripMenuItem
             // 
             this.mediumToolStripMenuItem.Name = "mediumToolStripMenuItem";
             this.mediumToolStripMenuItem.Size = new System.Drawing.Size(216, 26);
             this.mediumToolStripMenuItem.Text = "AlfaBeta";
+            this.mediumToolStripMenuItem.Click += HumanVsAlfaBetaClick;
             // 
             // easyToolStripMenuItem1
             // 
@@ -121,12 +125,37 @@ namespace Mill
             this.mediumToolStripMenuItem1.Name = "mediumToolStripMenuItem1";
             this.mediumToolStripMenuItem1.Size = new System.Drawing.Size(216, 26);
             this.mediumToolStripMenuItem1.Text = "AlfaBeta";
+            this.mediumToolStripMenuItem1.Click += AlfaBetaVsHumanClick;
             // 
             // aIVsAIToolStripMenuItem
             // 
+            this.aIVsAIToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.easyToolStripMenuItem2,
+            this.mediumToolStripMenuItem2, this.mediumToolStripMenuItem3});
             this.aIVsAIToolStripMenuItem.Name = "aIVsAIToolStripMenuItem";
             this.aIVsAIToolStripMenuItem.Size = new System.Drawing.Size(223, 28);
             this.aIVsAIToolStripMenuItem.Text = "AI vs AI";
+            // 
+            // easyToolStripMenuItem2
+            // 
+            this.easyToolStripMenuItem2.Name = "easyToolStripMenuItem2";
+            this.easyToolStripMenuItem2.Size = new System.Drawing.Size(216, 26);
+            this.easyToolStripMenuItem2.Text = "Minimax vs AlfaBeta";
+            this.easyToolStripMenuItem2.Click += AIvsAiClick;
+            // 
+            // mediumToolStripMenuItem2
+            // 
+            this.mediumToolStripMenuItem2.Name = "mediumToolStripMenuItem2";
+            this.mediumToolStripMenuItem2.Size = new System.Drawing.Size(216, 26);
+            this.mediumToolStripMenuItem2.Text = "Minimax vs Minimax";
+            this.mediumToolStripMenuItem2.Click += AIvsAi2Click;
+            //
+            // mediumToolStripMenuItem3
+            // 
+            this.mediumToolStripMenuItem3.Name = "mediumToolStripMenuItem3";
+            this.mediumToolStripMenuItem3.Size = new System.Drawing.Size(216, 26);
+            this.mediumToolStripMenuItem3.Text = "AlfaBeta vs AlfaBeta";
+            this.mediumToolStripMenuItem3.Click += AIvsAI3Click;
             // 
             // button1
             // 
@@ -243,6 +272,9 @@ namespace Mill
         private System.Windows.Forms.ToolStripMenuItem easyToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem mediumToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem aIVsAIToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem easyToolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem mediumToolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem mediumToolStripMenuItem3;
     }
 }
 

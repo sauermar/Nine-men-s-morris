@@ -24,10 +24,9 @@ namespace Mill
         public static short numberOfBlackStones = 9;
         public static short counter = 0;
         private bool humanVshuman = true;
-        private bool MinimaxVshuman, AlfaBetaVShuman = false;
+        private bool MinimaxVshuman, AlfaBetaVShuman, AIvsAI, different, AB = false;
         public static bool AIturn = false;
-        private Move moveResult;
-        private TakeStoneHeuristic takeStoneHeuristic = new TakeStoneHeuristic(); 
+        private TakeStoneHeuristic takeStoneHeuristic = new TakeStoneHeuristic();
 
         public Form1()
         {
@@ -48,7 +47,7 @@ namespace Mill
                     if (!AIturn)
                     {
                         HumanVsHuman(tupleOfIndexes);
-                        
+
                     }
                     else
                     {
@@ -70,7 +69,7 @@ namespace Mill
             }
         }
 
-        private void OpeningPhase(Tuple<int,int> tupleOfIndexes)
+        private void OpeningPhase(Tuple<int, int> tupleOfIndexes)
         {
 
             if (board.PutStoneOnBoard(blackIsPlaying, tupleOfIndexes))
@@ -88,7 +87,7 @@ namespace Mill
             }
         }
 
-        private void MidGamePhase(Tuple<int,int> tupleOfIndexes)
+        private void MidGamePhase(Tuple<int, int> tupleOfIndexes)
         {
             if (board.CanStoneBeSlided(blackIsPlaying, tupleOfIndexes))
             {
@@ -107,6 +106,13 @@ namespace Mill
                 textBox1.Text = "White Player won the game!";
             }
 
+            for(int i = 0; i < 24; i++)
+            {
+                string labelName = "label" + i;
+                Label label = this.Controls.Find(labelName, true).FirstOrDefault() as Label;
+                label.Enabled = false;
+            }
+
         }
 
         private void OnButtonClick(object sender, EventArgs e)
@@ -118,17 +124,35 @@ namespace Mill
 
         private void NextMoveClick(object sender, EventArgs e)
         {
-           if(AIturn)
-           {
-                if (MinimaxVshuman)
+            if (AIvsAI)
+            {
+                while (gameWon == false)
                 {
-                    AIplay(true);
+                    if (different)
+                    {
+                        AIplay(true);
+                    }
+                    else
+                    {
+                        AIplay(false);
+                    }
                 }
-                else if(AlfaBetaVShuman)
+            }
+            else
+            {
+                if (AIturn)
                 {
-                    AIplay(false);
+                    if (MinimaxVshuman)
+                    {
+                        AIplay(true);
+                    }
+                    else if (AlfaBetaVShuman)
+                    {
+                        AIplay(false);
+                    }
                 }
-           }
+            }
+            
         }
 
         private void HumanVsHumanClick(object sender, EventArgs e)
@@ -142,13 +166,45 @@ namespace Mill
             AIturn = true;
             textBox1.Text = "Ai starts, to proceed press the 'Next Move' button";
         }
+        private void AlfaBetaVsHumanClick(object sender, EventArgs e)
+        {
+            AlfaBetaVShuman = true;
+            AIturn = true;
+            textBox1.Text = "Ai starts, to proceed press the 'Next Move' button";
+        }
+        private void HumanVsAlfaBetaClick(object sender, EventArgs e)
+        {
+            AlfaBetaVShuman = true;
+        }
 
-        private void HumanVsMinimax(object sender, EventArgs e)
+        private void HumanVsMinimaxClick(object sender, EventArgs e)
         {
             MinimaxVshuman = true;
         }
+ 
+        private void AIvsAiClick (object sender, EventArgs e)
+        {
+            AIvsAI = true;
+            humanVshuman = false;
+            different = true;
+            textBox1.Text = "Press 'Next Move' button for starting the game";
+        }
+        private void AIvsAi2Click(object sender, EventArgs e)
+        {
+            AIvsAI = true;
+            humanVshuman = false;
+            textBox1.Text = "Press 'Next Move' button for starting the game";
+        }
 
-        private void HumanVsHuman(Tuple<int,int> tupleOfIndexes)
+        private void AIvsAI3Click(object sender, EventArgs e)
+        {
+            AIvsAI = true;
+            humanVshuman = false;
+            AB = true;
+            textBox1.Text = "Press 'Next Move' button for starting the game";
+        }
+
+        private void HumanVsHuman(Tuple<int, int> tupleOfIndexes)
         {
             if (!gameWon)
             {
@@ -253,134 +309,180 @@ namespace Mill
                         }
                     }
                 }
-                
-            }
-        }
-
-        private void AIplay( bool miniMax)
-        {
-            if (!gameWon)
-            {
-                if (miniMax)
-                {
-                    MinimaxAI minimax = new MinimaxAI(new PiecesCountGameEvaluation());
-                    moveResult = minimax.AIMinimaxMove(board, blackIsPlaying);
-
-                    if (gamePhase == GamePhase.opening)
-                    {
-                        string labelName = Linking.GetLabelName(moveResult.To);
-                        Label label = this.Controls.Find(labelName, true).FirstOrDefault() as Label;
-                        board.NewLabel = label;
-
-                        OpeningPhase(moveResult.To);
-                        label.Update();
-
-                        if (counter == 18)
-                        {
-                            board.NewLabel.Update();
-                            gamePhase = GamePhase.midPhase;
-                            textBox1.Text = "End of the opening phase";
-                            textBox1.Update();
-                            System.Threading.Thread.Sleep(3000);
-                            textBox1.Text = "White Player Starts";
-                        }
-
-                        if (takeStone == false)
-                        {
-                            if ((MinimaxVshuman) || (AlfaBetaVShuman))
-                            {
-                                AIturn = false;
-                            }
-                        }
-                        else
-                        {
-                            AITakeStone();
-                            AIturn = false;
-                        }
-                    }
-                    else if((gamePhase == GamePhase.midPhase) || (gamePhase == GamePhase.finishing))
-                    {
-                        string labelName = Linking.GetLabelName(moveResult.From);
-                        Label label = this.Controls.Find(labelName, true).FirstOrDefault() as Label;
-                        board.NewLabel = label;
-
-                        if ((numberOfBlackStones == 3) && (lastThreeBlack == false) && blackIsPlaying)
-                        {
-                            lastThreeBlack = true;
-                            gamePhase = GamePhase.finishing;
-                            MidGamePhase(moveResult.From);
-                        }
-                        else if ((numberOfWhiteStones == 3) && (lastThreeWhite == false) && !blackIsPlaying)
-                        {
-                            lastThreeWhite = true;
-                            gamePhase = GamePhase.finishing;
-                            MidGamePhase(moveResult.From);
-                        }
-                        else
-                        {
-                            MidGamePhase(moveResult.From);
-                        }
-
-                        if (slideStone)
-                        {
-                            labelName = Linking.GetLabelName(moveResult.To);
-                            label = this.Controls.Find(labelName, true).FirstOrDefault() as Label;
-                            board.NewLabel = label;
-                            slideStone = false;
-                            board.SlideStone(blackIsPlaying, moveResult.To);
-                        }
-
-                        if (board.IsMill(board.board, board.whiteMills, board.blackMills))
-                        {
-                            textBox1.Text = "Mill, take opponent's stone";
-                            AITakeStone();
-                            Decider();
-                            AIturn = false;
-                        }
-                        else
-                        {
-                            Decider();
-                            AIturn = false;
-                            blackIsPlaying = !blackIsPlaying;
-                            if (blackIsPlaying) { textBox1.Text = "Black Player"; }
-                            else { textBox1.Text = "White Player"; }
-                        }                          
-                    }
-                }
-                else
-                {
-
-                }
 
             }
         }
 
-        private void AITakeStone()
+        private void AIplay(bool miniMax)
         {
-            Tuple<int, int> indexes = takeStoneHeuristic.ChooseWhichStone(blackIsPlaying, board.board);
-            string labelName = Linking.GetLabelName(indexes);
-            Label label = this.Controls.Find(labelName, true).FirstOrDefault() as Label;
-            board.NewLabel = label;
-            board.TakeStoneFromBoard(blackIsPlaying, indexes);
             if (!gameWon)
             {
-                takeStone = false;
-                blackIsPlaying = !blackIsPlaying;
-
-                if (blackIsPlaying)
+                if (AIvsAI)
                 {
-                    textBox1.Text = "Black Player";
+                    if(miniMax)
+                    {
+                        if (blackIsPlaying)
+                        {
+                            MinimaxAI minimax = new MinimaxAI(new PiecesCountGameEvaluation());
+                            Move moveResult = minimax.AIMinimaxMove(board, blackIsPlaying);
+                            AIturnToPlay(moveResult);
+                        }
+                        else
+                        {
+                            AlfaBetaAI alfaBeta = new AlfaBetaAI(new PiecesCountGameEvaluation());
+                            Move moveResult = alfaBeta.AIAlfaBetaMove(board, blackIsPlaying);
+                            AIturnToPlay(moveResult);
+                        }
+                    }
+                    else
+                    {
+                        if (AB)
+                        {
+                            AlfaBetaAI alfaBeta = new AlfaBetaAI(new PiecesCountGameEvaluation());
+                            Move moveResult = alfaBeta.AIAlfaBetaMove(board, blackIsPlaying);
+                            AIturnToPlay(moveResult);
+                        }
+                        else
+                        {
+                            MinimaxAI minimax = new MinimaxAI(new PiecesCountGameEvaluation());
+                            Move moveResult = minimax.AIMinimaxMove(board, blackIsPlaying);
+                            AIturnToPlay(moveResult);
+                        }
+                    }
                 }
                 else
                 {
-                    textBox1.Text = "White Player";
+                    if (miniMax)
+                    {
+                        MinimaxAI minimax = new MinimaxAI(new PiecesCountGameEvaluation());
+                        Move moveResult = minimax.AIMinimaxMove(board, blackIsPlaying);
+                        AIturnToPlay(moveResult);
+                    }
+                    else if (miniMax == false)
+                    {
+                        AlfaBetaAI alfaBeta = new AlfaBetaAI(new PiecesCountGameEvaluation());
+                        Move moveResult = alfaBeta.AIAlfaBetaMove(board, blackIsPlaying);
+                        AIturnToPlay(moveResult);
+                    }
                 }
             }
             else
             {
                 GameWon(blackIsPlaying);
             }
-            
         }
+
+        private void AIturnToPlay(Move moveResult)
+        {
+            if (gamePhase == GamePhase.opening)
+            {
+                string labelName = Linking.GetLabelName(moveResult.To);
+                Label label = this.Controls.Find(labelName, true).FirstOrDefault() as Label;
+                board.NewLabel = label;
+
+                OpeningPhase(moveResult.To);
+                label.Update();
+
+                if (counter == 18)
+                {
+                    board.NewLabel.Update();
+                    gamePhase = GamePhase.midPhase;
+                    textBox1.Text = "End of the opening phase";
+                    textBox1.Update();
+                    System.Threading.Thread.Sleep(3000);
+                    textBox1.Text = "White Player Starts";
+                }
+
+                if (takeStone == false)
+                {
+                    if ((MinimaxVshuman) || (AlfaBetaVShuman))
+                    {
+                        AIturn = false;
+                    }
+                }
+                else
+                {
+                    AITakeStone();
+                    AIturn = false;
+                }
+            }
+            else if ((gamePhase == GamePhase.midPhase) || (gamePhase == GamePhase.finishing))
+            {
+                string labelName = Linking.GetLabelName(moveResult.From);
+                Label label = this.Controls.Find(labelName, true).FirstOrDefault() as Label;
+                board.NewLabel = label;
+
+                if ((numberOfBlackStones == 3) && (lastThreeBlack == false) && blackIsPlaying)
+                {
+                    lastThreeBlack = true;
+                    gamePhase = GamePhase.finishing;
+                    MidGamePhase(moveResult.From);
+                }
+                else if ((numberOfWhiteStones == 3) && (lastThreeWhite == false) && !blackIsPlaying)
+                {
+                    lastThreeWhite = true;
+                    gamePhase = GamePhase.finishing;
+                    MidGamePhase(moveResult.From);
+                }
+                else
+                {
+                    MidGamePhase(moveResult.From);
+                }
+
+                if (slideStone)
+                {
+                    labelName = Linking.GetLabelName(moveResult.To);
+                    label = this.Controls.Find(labelName, true).FirstOrDefault() as Label;
+                    board.NewLabel = label;
+                    slideStone = false;
+                    board.SlideStone(blackIsPlaying, moveResult.To);
+                }
+
+                if (board.IsMill(board.board, board.whiteMills, board.blackMills))
+                {
+                    textBox1.Text = "Mill, take opponent's stone";
+                    AITakeStone();
+                    Decider();
+                    AIturn = false;
+                }
+                else
+                {
+                    Decider();
+                    AIturn = false;
+                    blackIsPlaying = !blackIsPlaying;
+                    if (blackIsPlaying) { textBox1.Text = "Black Player"; }
+                    else { textBox1.Text = "White Player"; }
+                }
+            }
+        }
+
+        private void AITakeStone()
+            {
+                Tuple<int, int> indexes = takeStoneHeuristic.ChooseWhichStone(blackIsPlaying, board.board);
+                string labelName = Linking.GetLabelName(indexes);
+                Label label = this.Controls.Find(labelName, true).FirstOrDefault() as Label;
+                board.NewLabel = label;
+                board.TakeStoneFromBoard(blackIsPlaying, indexes);
+                if (!gameWon)
+                {
+                    takeStone = false;
+                    blackIsPlaying = !blackIsPlaying;
+
+                    if (blackIsPlaying)
+                    {
+                        textBox1.Text = "Black Player";
+                    }
+                    else
+                    {
+                        textBox1.Text = "White Player";
+                    }
+                }
+                else
+                {
+                    GameWon(blackIsPlaying);
+                }
+
+            }
+        
     }
 }

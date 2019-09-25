@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AlfaBetaAI.cs" />
     <Compile Include="Board.cs" />
     <Compile Include="BoardEvaluation\BoardEvaluationInterface.cs" />
     <Compile Include="BoardEvaluation\Heuristics.cs" />
