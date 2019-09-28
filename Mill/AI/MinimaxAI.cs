@@ -16,6 +16,7 @@ namespace Mill.AI
         private  Mill[] blackMills = new Mill[4];
         Move nextMaxMove;
         Move nextMinMove;
+        private readonly Random random = new Random();
 
         public MinimaxAI(IBoardEvaluationHeuristic boardEvaluationHeuristic)
         {
@@ -123,6 +124,23 @@ namespace Mill.AI
             Tuple<int,int> tupleOfINdexes = takestoneHeuristic.ChooseWhichStone(blackIsPlaying, board);
             board[tupleOfINdexes.Item1, tupleOfINdexes.Item2] = Board.PlaceOnBoardIs.free;
             return board;
+        }
+
+        public Move AIRandomMove(Board board, bool blackIsPlaying)
+        {
+            bool possibleMoveFound = false;
+            Move[] possiblemoves = board.GetIndexesOfPossibleMoves(blackIsPlaying, board.board);
+            Move nextMove = null;
+            while (!possibleMoveFound)
+            {
+                int i = random.Next(0, 35);
+                if ((possiblemoves[i] != null) && (possiblemoves[i].To.Item1 != -1))
+                {
+                    possibleMoveFound = true;
+                    nextMove = possiblemoves[i];
+                }
+            }
+            return nextMove;
         }
     }
 }

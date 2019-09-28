@@ -23,11 +23,14 @@ namespace Mill
         public static bool slideStone, gameWon = false;
         public static short numberOfWhiteStones = 9;
         public static short numberOfBlackStones = 9;
-        public static short counter = 0;
+        public static short counter, playedMoves1, playedMoves2 = 0;
         private bool humanVshuman = true;
-        private bool MinimaxVshuman, AlfaBetaVShuman, AIvsAI, different, AB = false;
+        private bool MinimaxVshuman, AlfaBetaVShuman, AIvsAI, different, AB, AIRandomMove1, AIRandomMove2 = false;
         public static bool AIturn = false;
         private TakeStoneHeuristic takeStoneHeuristic = new TakeStoneHeuristic();
+        private Move[] firstpreviousMoveResults = new Move[6];
+        private Move[] secondpreviousMoveResults = new Move[6];
+
 
         public Form1()
         {
@@ -137,6 +140,7 @@ namespace Mill
                     {
                         AIplay(false);
                     }
+                    if (gamePhase != GamePhase.opening) { System.Threading.Thread.Sleep(50); }
                 }
             }
             else
@@ -322,17 +326,55 @@ namespace Mill
                 {
                     if(miniMax)
                     {
+                        if(playedMoves1 == 6)
+                        {
+                            playedMoves1 = 0;
+                            if(Repeating(firstpreviousMoveResults))
+                            {
+                                AIRandomMove1 = true; 
+                            }
+                        }
+                        else if(playedMoves2 == 6)
+                        {
+                            playedMoves2 = 0;
+                            if (Repeating(secondpreviousMoveResults))
+                            {
+                                AIRandomMove2 = true; ;
+                            }
+                        }
                         if (blackIsPlaying)
                         {
                             MinimaxAI minimax = new MinimaxAI(new PiecesCountGameEvaluation());
-                            Move moveResult = minimax.AIMinimaxMove(board, blackIsPlaying);
-                            AIturnToPlay(moveResult);
+                            if (AIRandomMove1)
+                            {
+                                Move moveResult = minimax.AIRandomMove(board, blackIsPlaying);
+                                AIturnToPlay(moveResult);
+                                AIRandomMove1 = false;
+                            }
+                            else
+                            {
+                                Move moveResult = minimax.AIMinimaxMove(board, blackIsPlaying);
+                                firstpreviousMoveResults[playedMoves1] = moveResult;
+                                AIturnToPlay(moveResult);
+                                playedMoves1++;
+                            }
                         }
                         else
                         {
                             AlfaBetaAI alfaBeta = new AlfaBetaAI(new PiecesCountGameEvaluation());
-                            Move moveResult = alfaBeta.AIAlfaBetaMove(board, blackIsPlaying);
-                            AIturnToPlay(moveResult);
+                            if (AIRandomMove2)
+                            {
+                                Move moveResult = alfaBeta.AIRandomMove(board, blackIsPlaying);
+                                AIturnToPlay(moveResult);
+                                AIRandomMove2 = false;
+                            }
+                            else
+                            {
+                                Move moveResult = alfaBeta.AIAlfaBetaMove(board, blackIsPlaying);
+                                secondpreviousMoveResults[playedMoves2] = moveResult;
+                                AIturnToPlay(moveResult);
+                                playedMoves2++;
+                            }
                         }
                     }
                     else
@@ -457,6 +499,32 @@ namespace Mill
             }
         }
 
+        private bool Repeating(Move[] previousMoves)
+        {
+            short counterOfSameMoves = 0;
+            for (int j = 0; j < 6; j++)
+            {
+                for (int i = 0; i < 6; i++)
+                {
+                    if (i != j)
+                    {
+                        if(((previousMoves[j].From.Item1 == previousMoves[i].From.Item1) && (previousMoves[j].To.Item1 == previousMoves[i].To.Item1) && 
+                            (previousMoves[j].From.Item2 == previousMoves[i].From.Item2) && (previousMoves[j].To.Item2 == previousMoves[i].To.Item2))
+                          || ((previousMoves[j].From.Item1 == previousMoves[i].To.Item1) && (previousMoves[j].To.Item1 == previousMoves[i].From.Item1) && 
+                          (previousMoves[j].From.Item2 == previousMoves[i].To.Item2) && (previousMoves[j].To.Item2 == previousMoves[i].From.Item2)))
+                        {
+                            counterOfSameMoves++;
+                        }
+                    }
+                }
+            }
+            if (counterOfSameMoves >= 2)
+            {
+                return true;
+            }
+
+            return false;
+        }
         private void AITakeStone()
             {
                 Tuple<int, int> indexes = takeStoneHeuristic.ChooseWhichStone(blackIsPlaying, board.board);

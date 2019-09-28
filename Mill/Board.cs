@@ -212,6 +212,7 @@ namespace Mill
                 if (board[tupleOfIndexes.Item1, tupleOfIndexes.Item2] == PlaceOnBoardIs.whiteOccupied)
                 {
                     NewLabel.Image = null;
+                    NewLabel.Update();
                     Form1.numberOfWhiteStones--;
                     DeleteAllMillsWithStone(tupleOfIndexes.Item1, tupleOfIndexes.Item2, whiteMills);
                     //set the place of the stone on free
@@ -229,6 +230,7 @@ namespace Mill
                 if (board[tupleOfIndexes.Item1, tupleOfIndexes.Item2] == PlaceOnBoardIs.blackOccupied)
                 {
                     NewLabel.Image = null;
+                    NewLabel.Update();
                     Form1.numberOfBlackStones--;
                     DeleteAllMillsWithStone(tupleOfIndexes.Item1, tupleOfIndexes.Item2, blackMills);
                     //free the chosen place
